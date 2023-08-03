@@ -47,7 +47,7 @@ function Main() {
         {todoList.map((todo) => (
           <li key={todo.id}>
             <Link to={`/${todo.id}`}>
-              {todo.task} - {todo.time.toLocaleString()}
+              {todo.id} | {todo.task} | {todo.time.toLocaleString()}
             </Link>
           </li>
         ))}
