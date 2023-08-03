@@ -1,0 +1,199 @@
+<html>
+  <head>
+    <style>
+      /* 배너 스타일 */
+      .banner {
+        width: 1200px;
+        height: 300px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* 이미지 스타일 */
+      .image {
+        width: 1200px;
+        height: 300px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: left 0.5s ease-in-out;
+      }
+
+      /* 이미지 숨김 */
+      .hidden {
+        left: -1200px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 배너 컨테이너 -->
+    <div class="banner">
+      <!-- 이미지 1 -->
+      <img id="image1" class="image" alt="고양이 이미지 1" />
+      <!-- 이미지 2 -->
+      <img id="image2" class="image hidden" alt="고양이 이미지 2" />
+      <!-- 이미지 3 -->
+      <img id="image3" class="image hidden" alt="고양이 이미지 3" />
+    </div>
+
+    <script>
+      // DOM 트리가 구성되면 콘솔 로그에 메시지 출력
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("페이지가 구성되었습니다.");
+      });
+
+      // 모든 리소스가 로드되면 콘솔 로그에 메시지 출력
+      window.addEventListener("load", function () {
+        console.log("모든 리소스가 로드되었습니다.");
+      });
+
+      // 이미지 요소 선택
+      var image1 = document.getElementById("image1");
+      var image2 = document.getElementById("image2");
+      var image3 = document.getElementById("image3");
+
+      // 현재 보여지는 이미지 인덱스
+      var current = 1;
+
+      // 다음 이미지로 넘어가는 함수
+      function nextImage() {
+        // 현재 이미지를 숨김
+        switch (current) {
+          case 1:
+            image1.classList.add("hidden");
+            break;
+          case 2:
+            image2.classList.add("hidden");
+            break;
+          case 3:
+            image3.classList.add("hidden");
+            break;
+        }
+        // 다음 이미지를 보여줌
+        current = (current % 3) + 1;
+        switch (current) {
+          case 1:
+            image1.classList.remove("hidden");
+            break;
+          case 2:
+            image2.classList.remove("hidden");
+            break;
+          case 3:
+            image3.classList.remove("hidden");
+            break;
+        }
+      }
+
+      // 이전 이미지로 넘어가는 함수
+      function prevImage() {
+        // 현재 이미지를 숨김
+        switch (current) {
+          case 1:
+            image1.classList.add("hidden");
+            break;
+          case 2:
+            image2.classList.add("hidden");
+            break;
+          case 3:
+            image3.classList.add("hidden");
+            break;
+        }
+        // 이전 이미지를 보여줌
+        current = (current + 1) % 3;
+        switch (current) {
+          case 1:
+            image1.classList.remove("hidden");
+            break;
+          case 2:
+            image2.classList.remove("hidden");
+            break;
+          case 3:
+            image3.classList.remove("hidden");
+            break;
+        }
+      }
+
+      // 배너 요소 선택
+      var banner = document.querySelector(".banner");
+
+      // 배너에 터치 이벤트 리스너 추가
+      banner.addEventListener("touchstart", handleTouchStart, false);
+      banner.addEventListener("touchmove", handleTouchMove, false);
+
+      // 터치 시작 좌표
+      var xStart = null;
+
+      // 터치 시작 시 좌표 저장하는 함수
+      function handleTouchStart(event) {
+        xStart = event.touches[0].clientX;
+      }
+
+      // 터치 이동 시 방향에 따라 이전 또는 다음 슬라이드로 넘어가는 함수
+      function handleTouchMove(event) {
+        // 터치 시작 좌표가 없으면 리턴
+        if (!xStart) {
+          return;
+        }
+
+        // 터치 이동 좌표
+        var xEnd = event.touches[0].clientX;
+
+        // 터치 이동 거리
+        var xDiff = xStart - xEnd;
+
+        // 터치 이동 거리가 50px 이상이면
+        if (Math.abs(xDiff) > 10) {
+          // 터치 방향에 따라 이전 또는 다음 이미지로 넘어감
+          if (xDiff > 0) {
+            nextImage();
+          } else {
+            prevImage();
+          }
+        }
+
+        // 터치 시작 좌표 초기화
+        xStart = null;
+      }
+
+      // 이미지 URL 배열
+      var imageUrls = [
+        "https://placekitten.com/400/100?image=1",
+        "https://placekitten.com/400/100?image=2",
+        "https://placekitten.com/400/100?image=3",
+      ];
+
+      // 이미지를 fetch로 가져오는 함수
+      function fetchImage(image, url) {
+        // fetch 요청
+        fetch(url)
+          .then(function (response) {
+            // 응답이 성공적이면 blob으로 변환
+            if (response.ok) {
+              return response.blob();
+            } else {
+              // 응답이 실패하면 에러 발생
+              throw new Error("이미지를 가져오는데 실패했습니다.");
+            }
+          })
+          .then(function (blob) {
+            // blob을 URL로 변환
+            var imageUrl = URL.createObjectURL(blob);
+            // 이미지 src에 URL 할당
+            image.src = imageUrl;
+          })
+          .catch(function (error) {
+            // 에러 처리
+            console.error(error);
+          });
+      }
+
+      // 각 이미지에 대해 fetchImage 함수 호출
+      fetchImage(image1, imageUrls[0]);
+      fetchImage(image2, imageUrls[1]);
+      fetchImage(image3, imageUrls[2]);
+
+      // 3초마다 다음 이미지로 넘어가는 타이머 설정
+      setInterval(nextImage, 3000);
+    </script>
+  </body>
+</html>
